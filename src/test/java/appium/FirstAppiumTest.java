@@ -1,18 +1,11 @@
 package appium;
 
-import io.appium.java_client.MobileElement;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.remote.MobileCapabilityType;
+import base.BaseUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
+
 
 
 /*
@@ -20,40 +13,48 @@ import java.util.concurrent.TimeUnit;
  * APPIUM SERVER SHOULD BE UP AND RUNNING ON - http://127.0.0.1:4723
  * ANDROID EMULATOR SHOULD BE UP AND RUNNING
  * */
-public class FirstAppiumTest {
-    private AndroidDriver<MobileElement> androidDriver;
-
-    @BeforeMethod
-    public void appSetup() throws MalformedURLException {
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, "Android");
-        capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, "10");
-        capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "Android Emulator");
-        capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "UiAutomator2");
-        capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "30");
-        capabilities.setCapability(MobileCapabilityType.UDID, "emulator-5554"); // your device id
-        capabilities.setCapability("appPackage", "com.android.settings");
-        capabilities.setCapability("appActivity", "com.android.settings.Settings");
-
-        androidDriver = new AndroidDriver<>(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
-        androidDriver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
-    }
+public class FirstAppiumTest extends BaseUtils {
 
 
     @Test
     public void testSearch(){
          String actualText = androidDriver.findElement(By.id("com.android.settings:id/search_action_bar_title")).getText();
          Assert.assertEquals(actualText, "Search settings", "Wrong text");
+         this.scrollDown();
+         this.scrollUp();
     }
 
-    // Homework: Please add at least 5 or more tests with multiple assertions on android setting app
+    @Test
+    public void testUiScroll() throws InterruptedException {
+        String actualText = androidDriver.findElement(By.id("com.android.settings:id/search_action_bar_title")).getText();
+        Assert.assertEquals(actualText, "Search settings", "Wrong text");
+        scrollAndClick("System");
+        Thread.sleep(3000);
 
-
-    @AfterMethod
-    public void tearDown(){
-           // driver closed
-            androidDriver.closeApp();
-            androidDriver.quit();
+        retryingFindClick("Date & time");
+        Thread.sleep(3000);
     }
+
+    @Test
+    public void testWifiOff() throws InterruptedException {
+        setWifiOff();
+        Thread.sleep(3000);
+    }
+
+    @Test
+    public void testWifiOn() throws InterruptedException {
+        setWifiOn();
+        Thread.sleep(3000);
+    }
+
+    @Test
+        public void testOpenNotification() throws InterruptedException {
+        openNotification();
+        Thread.sleep(3000);
+    }
+
+
+
+// scroll down and click on system > advance option > developer option > Icon shape > then verify 5 radio button options
 
 }
